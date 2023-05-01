@@ -1,0 +1,407 @@
+\documentclass[12pt]{article}
+\usepackage{xcolor}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm, headsep=2mm, foot=4mm]{geometry}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{enumerate}
+\usepackage{parskip}
+\usepackage{mathtools}
+\usepackage{mathrsfs}
+\usepackage{mdframed}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\graphicspath{ {./img/} }
+
+\newcommand{\lefttext}[1]{\makebox[0pt][l]{#1}}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\range}{range}
+
+\title{Homework 1 - AMATH 583}
+\author{Warren Paris-Moe}
+\date{April 2023}
+
+\begin{document}
+
+\section{Problem 1}
+\begin{mdframed}
+    Prove that $C([a,b])$ equipped with the $L^2([a,b])$ norm is not a Banach space.
+\end{mdframed}
+
+To show the space of continuous functions $C([a,b])$ quipped with the $L^2$-norm is not a Banach space, we need to show the vector space is not complete. We can accomplish this by constructing a Cauchy sequency that converges to a discontinuous function.
+
+Let $f_n$ be the sequence such that for some $c\in[a,b]$,
+\[
+    f_n(x) = 
+        \begin{cases}
+            0, & x \in [a, c - \frac{1}{n}] \\
+            n(x - c) + 1, & x \in (c - \frac{1}{n}, c] \\
+            1, & x \in (c, b]
+        \end{cases}
+\]
+
+Now, we want to show $f_n$ is a Cauchy sequence, so we examine
+\[
+    \|f_j - f_k\|_{L^2} := (\int_{a}^{b} |f_j-f_k|^2dx)^{\frac{1}{2}} \leq \epsilon \quad \forall \epsilon > 0
+\]
+
+Observe how $\forall x \in [a,b]$ and $j,k \in \mathbb{N}$,
+\begin{equation} 
+\label{eq:finequal}
+    |f_j(x) - f_k(x)| \leq 1
+\end{equation}
+
+Now, say $n\geq m$. Then, $|f_n(x) - f_m(x)| = 0$ so that $f_n(x) = f_m(x)$ when $x \in [a,b] \setminus (c-\frac{1}{m}, c]$. Thus, we take
+\begin{align*}
+    \|f_n - f_m\|_{L^2}^2 &= \int_{a}^{b} |f_n(x) - f_m(x)|^2dx \\
+        &= \int_{c-\frac{1}{m}}^{c} |f_n(x) - f_m(x)|^2dx \\
+        &\leq \int_{c-\frac{1}{m}}^{c} 1^2dx \tag{by expression (\ref{eq:finequal})}\\
+        &= x|_{c-\frac{1}{m}}^{c} \\
+        &= c - (c - \frac{1}{m}) \\
+        &= \frac{1}{m}
+\end{align*} 
+
+For the limit as $n,m \to \infty$, $\|f_n-f_m\|_{L^2}=\frac{1}{m} \to 0$. Thus, $f_n$ is Cauchy in $L^2([a,b])$.
+
+
+Following the conclusion that $f_n$ is Cauchy with respect to the $L^2$-norm, let us assume there exists a function
+$f \in C([a,b])$ such that $f_n \to f$ in $L^2([a,b])$. Esentially, this means
+\begin{equation*}
+    \|f_n - f\|_{L^2}^{2} = \int_{a}^{b} |f_n(x) - f(x)|^2dx \to 0, \quad \text{as } n \to \infty.
+\end{equation*}
+
+Now, we can see that as $n\to \infty$, the function $f_n$ converges to $g$, $f_n \to g$, where
+\[
+    g(x) =
+        \begin{cases}
+            0, & x \in [a, c] \\
+            1, & x \in (c, b]
+        \end{cases}
+\]
+
+for some $c\in [a,b]$. We can show that $f_n \to g$ in the $L^2$-norm similarly to how we showed $f_n$ is Cauchy.
+\[
+    \|f_n - g\|_{L^2}^2 = \int_{a}^{b} |f_n(x) - g(x)|^2dx = \int_{c- \frac{1}{n}}^{c} |f_n(x) - g(x)|^2dx \leq \int_{c- \frac{1}{n}}^{c} 1^2dx = \frac{1}{n} \to 0, \quad \text{as } n \to \infty
+\]
+
+However, $g$ is not a continuous function at $c$ (i.e.: $f_n(x) \to g(x) \notin C([a,b])$).
+Now, we have constructed a Cauchy sequence from the $L^2$-norm that converges to a discontinuous 
+function over the interval $[a,b]$. Thus, we have shown that $C([a,b])$ equipped with the $L^2$-norm is not a Banach space.  
+
+\newpage
+
+\section{Problem 2}
+\begin{mdframed}
+    If $(X_1,\|\cdot\|_1)$ and $(X_2, \|\cdot\|_2)$ are normed spaces, show that the (Cartesian) product space $X = X_1 \times X_2$
+    becomes a normed space with the norm $\|x\|=\max(\|x_1\|_1, \|x_2\|_2)$ where $x\in X$ is defined as the tuple $x=(x_1, x_2)$
+    with addition and scalar multiplication operations: 
+        $(x_1,x_2) + (y_1,y_2) = (x_1 + y_1, x_2 + y_2)$ and 
+        $\alpha(x_1,x_2) = (\alpha x_1, \alpha x_2)$.
+\end{mdframed}
+
+We want to show that $X=X_1 \times X_2$ is a normed space. Therefore, we must verify that the product space satifies the 
+4 basic properties of vector addition and scalar multiplication. Let $x=(x_1,x_2), y=(y_1,y_2), z=(z_1,z_2) \in X$ and 
+$\alpha,\beta \in \mathbb{R}$.
+
+\textbf{(Vector Addition)}
+\begin{enumerate}
+    \item $x + y = y + x$
+        \begin{align*}
+            x + y &= (x_1,x_2) + (y_1,y_2) \\
+            &= (x_1+y_1,x_2+y_2) \\
+            &= (y_1+x_1,y_2+x_2) \\
+            &= (y_1,y_2) + (x_1,x_2) = y + x
+        \end{align*}
+    \item $x + (y + z) = (x + y) + z$ 
+        \begin{align*}
+            x + (y + z) &= (x_1,x_2) + [(y_1,y_2) + (z_1,z_2)] \\
+            &= (x_1,x_2) + (y_1+z_1, y_2+z_2) \\
+            &= (x_1+y_1+z_1, x_2+y_2+z_2) \\
+            &= (x_1+y_1,x_2+y_2) + (z_1,z_2) \\
+            &= [(x_1,y_1) + (y_1,z_1)] + (z_1,z_2) = (x + y) + z
+        \end{align*}
+        \item $x + 0 = x$
+            \begin{align*}
+                x + 0 &= (x_1,x_2) + (0,0) \\
+                &= (x_1+0,x_2+0) \\
+                &= (x_1,x_2) = x
+            \end{align*}
+        \item $x + (-x) = 0$
+            \begin{align*}
+                x + (-x) &= (x_1,x_2) + (-1)(x_1,x_2) \\
+                &= (x_1,x_2) + (-x_1,-x_2) \\
+                &= (x_1-x_1,x_2-x_2) \\
+                &= (0,0) = 0
+            \end{align*}
+\end{enumerate}
+
+\textbf{(Scalar Multiplication)}
+\begin{enumerate}
+    \item $\alpha(\beta x) = (\alpha \beta)x$
+        \begin{align*}
+            \alpha(\beta x) &= \alpha(\beta(x_1,x_2)) \\
+            &= \alpha(\beta x_1, \beta x_2) \\
+            &= (\alpha \beta x_1, \alpha \beta x_2) \\
+            &= (\alpha \beta)(x_1,x_2) = (\alpha \beta)x
+        \end{align*}
+    \item $1x = x$
+        \begin{align*}
+            1x &= (1)(x_1,x_2) \\
+            &= (1x_1,1x_2) \\
+            &= (x_1,x_2) = x
+        \end{align*}
+    \item $\alpha(x + y) = \alpha x + \alpha y$
+        \begin{align*}
+            \alpha(x + y) &= \alpha((x_1,x_2) + (y_1,y_2)) \\
+            &= \alpha(x_1+y_1, x_2+y_2) \\
+            &= (\alpha(x_1+y_1), \alpha(x_2+y_2)) \\
+            &= (\alpha x_1 + \alpha y_1, \alpha x_2 + \alpha y_2) \\
+            &= (\alpha x_1, \alpha x_2) + (\alpha y_1, \alpha y_2) \\
+            &= \alpha(x_1,x_2) + \alpha(y_1,y_2) = \alpha x + \alpha y
+        \end{align*}
+    \item $(\alpha + \beta)x = \alpha x + \beta x$
+        \begin{align*}
+            (\alpha + \beta)x &= (\alpha + \beta)(x_1,x_2) \\
+            &= ((\alpha+\beta)x_1, (\alpha+\beta)x_2) \\
+            &= (\alpha x_1 + \beta x_1, \alpha x_2 + \beta x_2) \\
+            &= (\alpha x_1, \alpha x_2) + (\beta x_1, \beta x_2) \\
+            &= \alpha(x_1,x_2) + \beta(x_1,x_2) = \alpha x + \beta x
+        \end{align*}
+\end{enumerate}
+
+\textbf{(Norm)} 
+Furthermore, we can verify the four axioms of a norm for $\|x\|=\max(\|x_1\|_1,\|x_2\|_2)$ to show
+that the product space $X=X_1 \times X_2$ is a normed space.
+\begin{enumerate}
+    \item $\|x\| \geq 0$
+        \begin{align*}
+            \|x\| &= \max(\|x_1\|_1,\|x_2\|_2) \\
+            &= \max(\sum_{i=1}^n |x_{1,i}|, (\sum_{i=1}^n |x_{2,i}|^2)^{\frac{1}{2}}) \\
+            &\geq \max(0,0) = 0
+        \end{align*}
+        since the sum of absolute values is always positive unless all elements are zero. 
+    \item $\|x\| = 0 \Leftrightarrow x = 0$
+        \begin{flalign*}
+            &\lefttext{(\rightarrow)}& \|x\| &= 0, \text{then} &&\\
+            && \max(\|x_1\|_1,\|x_2\|_2) &= \max(0,0) \\
+            && \max(\sum_{i=1}^n |x_{1,i}|, (\sum_{i=1}^n |x_{2,i}|^2)^{\frac{1}{2}}) &= \max(0,0)
+        \end{flalign*}
+        giving us
+        \[
+            \sum_{i=1}^n |x_{1,i}| = 0 \quad \text{and} \quad (\sum_{i=1}^n |x_{2,i}|^2)^{\frac{1}{2}} = 0
+        \]
+        which implies that $x_1,x_2$ must both be zero, or the zero vector, and thus,
+        $x=(x_1,x_2)=(0,0)=0$.
+        \begin{flalign*}
+            &\lefttext{(\leftarrow)}& x &= (x_1,x_2) = (0,0) = 0, \text{then} &&\\
+            && \|x\| &= \max(\|0\|_1,\|0\|_2) \\
+            && &= \max(0,0) \\
+            && &= 0
+        \end{flalign*}
+    \item $\|\alpha x\| = |\alpha| \|x\|, \: \forall \alpha \in \mathbb{R}$
+        \begin{align*}
+            \|\alpha x \| &= \|\alpha(x_1,x_2)\| \\
+            &= \|(\alpha x_1, \alpha x_2)\| \\
+            &= \max(\|\alpha x_1\|_1, \|\alpha x_2\|_2) \\
+            &= \max(\sum_{i=1}^n |\alpha x_{1,i}|, (\sum_{i=1}^n |\alpha x_{2,i}|^2)^{\frac{1}{2}}) \\
+            &= \max(\sum_{i=1}^n |\alpha||x_{1,i}|, (\sum_{i=1}^n |\alpha|^2|x_{2,i}|^2)^{\frac{1}{2}}) \\
+            &= \max(|\alpha|\sum_{i=1}^n |x_{1,i}|, |\alpha|(\sum_{i=1}^n |x_{2,i}|^2)^{\frac{1}{2}}) \\
+            &= |\alpha|\max(\sum_{i=1}^n |x_{1,i}|, (\sum_{i=1}^n |x_{2,i}|^2)^{\frac{1}{2}}) \\
+            &= |\alpha|\max(\|x_1\|_1, \|x_2\|_2) \\
+            &= |\alpha|\|x\|
+        \end{align*}
+    \item $\|x + y\| \leq \|x\| + \|y\|$ (triangle inequality)
+        \begin{align*}
+            \|x + y\| &= \|(x_1,x_2) + (y_1,y_2)\| \\
+            &= \|(x_1 + y_1, x_2 + y_2)\| \\
+            &= \max(\|x_1 + y_1\|_1, \|x_2 + y_2\|_2) \\
+            &\leq \max(\|x_1\|_1 + \|y_1\|_1, \|x_2\|_2 + \|y_2\|_2) \\
+            &\leq \max(\|x_1\|_1, \|x_2\|_2) + \max(\|y_1\|_1, \|y_2\|_2) \\
+            &= \|(x_1,x_2)\| + \|(y_1,y_2)\| \\
+            &= \|x\| + \|y\|
+        \end{align*}
+\end{enumerate}
+Thus, we have shown that the product space $X=X_1 \times X_2$ becomes a normed space with the norm
+$\|x\|=\max(\|x_1\|_1,\|x_2\|_2)$.
+
+
+\newpage
+\section{Problem 3}
+\begin{mdframed}
+    Show that the product (composition) of two linear operators, if it exists, is a linear operator.
+\end{mdframed}
+Let $T: X \rightarrow Y$ and $U: Y \rightarrow Z$ be two linear operators. Then, $T[u+v]=T[u]+T[v]$, 
+$T[\alpha u]=\alpha T[u]$ for all $u,v \in X$, $\alpha \in \mathbb{R}$ and $U[x+y]=U[x]+U[y]$, 
+$U[\alpha x] = \alpha U[x]$ for all $x,y \in Y$, $\alpha \in \mathbb{R}$.
+
+
+We can define the product, or composition, of these two operators $U \circ T = UT: X \rightarrow Z$ so that 
+$\forall x \in \dom{(UT)}=M \subset X$, $(UT)[x] = U(T[x])$ where $M$ is the largest subset of
+$\dom{(T)}=X$ whose image under $T$ lies in $\dom{(U)}$. Now, for any $u,v \in X$ and $\alpha \in \mathbb{R}$,
+we must verify the addition and scalar multiplication properties of a linear operator. Then, we have
+\begin{equation}
+    (U \circ T)[u+v] = U(T[u+v]) = U(T[u] + T[v]) = U(T[u]) + U(T[v]) = (U \circ T)[u] + (U \circ T)[v]
+\end{equation}
+and
+\begin{equation}
+    (U \circ T)[\alpha u] = U(T[\alpha u]) = U(\alpha T[u]) = \alpha U(T[u]) = \alpha (U \circ T)[u]
+\end{equation}
+which are valid by the linearity of $T$ and $U$. Thus, the product of two linear operators, $U \circ T$ 
+is a linear operator.
+
+
+
+\newpage
+\section{Problem 4}
+\begin{mdframed}
+    Let $T: X \to Y$ be a linear operator and $\dim{X} = \dim{Y} = n < +\infty$. Show that $\range{(T)} = Y$ 
+    if and only if $T^{-1}$ exists.
+\end{mdframed}
+
+Let $X,Y$ be vector spaces and $T: X \to Y$ be a linear operator where $\dim{X} = \dim{Y} = n < +\infty$. 
+
+\textbf{(\rightarrow)} Let $\range{(T)}=Y$. Since $T$ is linear and by the rank-nullity theorem (dimension theorem), 
+\[
+    \dim{\range{(T)}} + \dim{\text{null}(T)} = \dim{X}.
+\]
+By the hypothesis, $\range{(T)}=Y$ and $\dim{X}=\dim{Y}=n$, so
+\[
+    0 = \dim{Y} - \dim{X} + \dim{\text{null}(T)} = n - n +\dim{\text{null}(T)} = \dim{\text{null}(T)}.
+\]
+This implies that $\text{null}(T)$ is the singleton set of the zero vector $\{\vec{0}\}$. Since $T$ is a
+linear operator we know it is also an injection. Since $\range{(T)}=Y$ and $T$ is one-to-one,
+we can conclude that $T$ is bijective. Therefore, because bijectivity implies invertibility, $T^{-1}$ 
+must exist.
+
+\textbf{(\leftarrow)} Suppose $T$ is invertible, then $\exists S: Y \to Z$ such that 
+$S \circ T = T \circ S = I$. 
+
+$S \circ T = I \longrightarrow T$ is injective, and $T \circ S = I \longrightarrow T$ is surjective,
+so $T$ is bijective.
+
+Since $T$ is surjective and $\dim{X}=\dim{Y}$, for any $y\in Y$ we have that $T(T^{-1}[y])=y$ 
+so that $\range{(T)}=Y$.
+
+Therefore, given $T: X\to Y$ is a linear operator and $\dim{X}=\dim{Y}=n< +\infty$, $\range{(T)}=Y$ if
+and only if $T^{-1}$ exists.
+
+
+
+\newpage
+\section{Problem 5}
+\begin{mdframed}
+    Let $T$ be a bounded linear operator from a normed space $X$ onto a normed space $Y$. Show that if
+    there is a positive constant $b$ such that $\|Tx\| \geq b\|x\|$ for all $x\in X$ then $T^{-1}$ exists
+    and is bounded.
+\end{mdframed}
+
+Let $X,Y$ be normed spaces such that $T: X \to Y$ is a bounded linear operator and $b>0 \in \mathbb{R}$.
+Suppose that  $\|Tx\| \geq b\|x\| \forall x \in X$. Let $Tx=0$ for some $X \in X$. Then, we have
+\begin{align}
+    0 &= \|Tx\| \geq b\|x\|, \\
+    \|x\| &= 0, \text{and} \\
+    x &= 0.
+\end{align}
+Then, by the inverse operator theorem (2.6-10), we know that $T^{-1}$ exists. Notice that since 
+$\range{(T)}=Y$, we have that $T^{-1}: T \to X$. Now, let $y=Tx$ so that $T^{-1}y=x$. Finally, we
+conclude that $T^{-1}$ is bounded by the relationship
+\[
+    \|T^{-1}y\| = \|x\| \leq \frac{1}{b}\|Tx\| = \frac{1}{b}\|y\|.
+\]
+
+
+
+\newpage
+\section{Problem 6}
+\begin{mdframed}
+    Consider the functional $f(x) = \max_{t\in[a,b]} x(t)$ on $C([a,b])$ equipped with the sup norm. 
+    Is this functional linear? bounded?
+\end{mdframed}
+
+Suppose we have a functional $f(x) = \max_{t\in[a,b]} x(t)$ on $C([a,b])$ equipped with the sup norm
+$\|f\| = \sup_{x\neq 0} \frac{|f(x)|}{\|x\|} = \sup_{\|x\|=1}$.
+
+Recall, the function space $C([a,b])$ is the set of all real-valued, defined, continuous functions x,y 
+of an independent variable $t$ over the interval $J=[a,b]$. Also a Banach space with the supremum norm, 
+every point of $C([a,b])$ is a function.
+
+Continuous functions are guaranteed to reach a maximum and minimum on a closed interval. Let
+\begin{align*}
+    x(t) &= \frac{t-a}{b-a}, &y(t)= \frac{-(t-a)}{b-a} 
+\end{align*}
+Then,
+\[
+    f(x + y) = \sup_{t \in [a,b]}(\frac{t-a}{b-a} + \frac{-(t-a)}{b-a}) = \sup_{t \in [a,b]}(0) = 0.
+\]
+However, 
+\[
+    f(x) + f(y) = \sup_{t \in [a,b]}(\frac{t-a}{b-a}) + \sup_{t \in [a,b]}(\frac{-(t-a)}{b-a}) = 1 + 0 = 1.
+\]
+Therefore, $f$ is not a linear functional since $f(x+y) \neq f(x) + f(y)$.
+
+Though, such a function is in fact bounded since for any $x \in C([a,b])$,
+\[
+    |f(x)| = \sup_{t\in [a,b]} x(t) \leq \sup_{t\in [a,b]} |x(t)| = \|x\|.
+\]
+
+
+\newpage
+\section{Problem 7}
+\begin{mdframed}
+    Let $X$ be a Banach space and denote its dual as $X^*$. Show that 
+    $\|\varphi\|: \varphi \to \sup_{\|x\|=1} |\varphi(x)|$ is a norm on $X^*$.
+\end{mdframed}
+
+Suppose $X$ is a Banach space with dual $X^*$. To show 
+$\|\varphi\|: \varphi \to \sup_{\|x\|=1} |\varphi(x)|$ is a norm on $X^*$, we must prove the following properties:
+
+\begin{enumerate}
+    \item Non-negativity: \\
+        Clearly, $|\varphi|\geq 0$ for all $\varphi\in X^*$. Moreover, if $|\varphi|=0$, then $\sup_{\|x\|=1}|\varphi(x)|=0$. This means that $|\varphi(x)|=0$ for all $x$ with $\|x\|=1$. But any $x\in X$ with $\|x\|=1$ can be written as $\frac{\tilde{x}}{\|\tilde{x}\|}$ for some $\tilde{x}\in X$ with $\|\tilde{x}\|\neq 0$. Therefore, $\varphi(\tilde{x})=0$ for all $\tilde{x}\in X$, which implies that $\varphi=0$.
+    \item Homogeneity: \\
+    For any $\alpha\in\mathbb{C}$ and $\varphi\in X^*$, we have
+        \begin{align*}
+            |\alpha\varphi|&=\sup_{\|x\|=1}|\alpha\varphi(x)| \\
+            &= \sup_{\|x\|=1}|\alpha|\cdot |\varphi(x)| \\
+            &= |\alpha|\sup_{|x|=1}|\varphi(x)| \\
+            &= |alpha||\varphi|.
+        \end{align*}
+    \item Triangle inequality:
+    For any $\varphi_1,\varphi_2\in X^*$, we have
+        \begin{align*}
+            |\varphi_1+\varphi_2|&=\sup_{|x|=1}|\varphi_1(x)+\varphi_2(x)|\\
+            &\leq \sup_{|x|=1}|\varphi_1(x)|+\sup_{|x|=1}|\varphi_2(x)|\\
+            &=|\varphi_1|+|\varphi_2|.
+        \end{align*}
+\end{enumerate}
+
+
+
+
+\newpage
+\section{Problem 8}
+\begin{mdframed}
+    Prove the Schwartz inequality on the inner product spaces: $|\langle x, y \rangle| \leq \|x\| \cdot \|y\|$, 
+    $\forall x,y\in X$, where equality holds if and only if $x,y$ are linearly dependent.
+\end{mdframed}
+
+Let $x,y\in X$ be given. If we expand our scope to include the complex plane, w then define $f:\mathbb{C}\to\mathbb{C}$ by $f(t) = \langle x+ty, x+ty\rangle$, which is a continuous function. Since $f(t) \geq 0$ for all $t\in\mathbb{C}$, we have $0\leq f(t) = |x|^2 + 2t\mathrm{Re}\langle x,y\rangle + t^2|y|^2$ for all $t\in\mathbb{C}$. This inequality holds for any complex number $t$, so we can choose $t$ to be a complex number of the form $t=-\frac{\mathrm{Re}\langle x,y\rangle}{|y|^2}$, which yields
+\begin{align*}
+    0 &\leq |x|^2 - 2\frac{|\mathrm{Re}\langle x,y\rangle|^2}{|y|^2} + \frac{|\mathrm{Re}\langle x,y\rangle|^2}{|y|^2} \\
+    &= |x|^2 - \frac{|\mathrm{Re}\langle x,y\rangle|^2}{|y|^2},
+\end{align*}
+where we have used the fact that $\mathrm{Re}\langle x,y\rangle^2 + \mathrm{Im}\langle x,y\rangle^2 = |\langle x,y\rangle|^2$ for any complex numbers $x$ and $y$.
+
+Rearranging the inequality above, we obtain
+\begin{equation*}
+|\langle x,y\rangle|^2 \leq |x|^2|y|^2,
+\end{equation*}
+which is the desired Schwartz inequality. To obtain the inequality itself, we simply take the square root of both sides.
+
+Finally, suppose that $x$ and $y$ are linearly dependent, so that there exists a nonzero complex number $\alpha$ such that $x=\alpha y$. Then we have
+\begin{align*}
+|\langle x,y\rangle| &= |\langle \alpha y, y\rangle|\
+&= |\alpha| |y|^2\
+&= |x||y|,
+\end{align*}
+so equality holds in the Schwartz inequality. Conversely, if equality holds in the Schwartz inequality, then we must have $|\mathrm{Re}\langle x,y\rangle| = \frac{1}{2}|\langle x+y,x+y\rangle - |x|^2 - |y|^2| = 0$, which implies that $\mathrm{Re}\langle x,y\rangle = 0$. This means that $\langle x,y\rangle$ is a purely imaginary number, and hence $x$ and $y$ are linearly dependent.
+
+\end{document}
