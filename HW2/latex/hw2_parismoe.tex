@@ -1,0 +1,104 @@
+\documentclass[12pt]{article}
+%\usepackage{xcolor}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm, headsep=2mm, foot=4mm]{geometry}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{mathtools}
+\usepackage{mathrsfs}
+\usepackage{mdframed}
+%\usepackage{graphicx}
+%\usepackage{hyperref}
+%\graphicspath{ {./img/} }
+
+%\newcommand{text}[1]{\makebox[0pt][l]{#1}}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\range}{range}
+
+\title{Homework 1 - AMATH 583}
+\author{Warren Paris-Moe}
+\date{April 2023}
+
+\begin{document}
+
+\section*{THEORY}
+
+\subsection*{Problem 1}
+\begin{mdframed}
+    Suppose $\Gamma: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ is a PDS kernel. 
+    Prove that $\forall x, x' \in \mathcal{X}$ it holds that
+    $|\Gamma(x, x')|^2 \leq \Gamma(x, x) \Gamma(x', x')$.
+\end{mdframed}
+
+Let $\Gamma:\mathcal{X}\times\mathcal{X}arrow\mathbb{R}$ be a positive definite symmetric (PDS)
+kernel in the real space and $x,x' \in \mathcal{X}$. Say $x=x_1$ and $x'=x_2$. Then, since $\Gamma$ 
+is PDS, we know that the $2 \times 2$ kernel matrix $K$ with entries $K_{ij} = \Gamma(x_i, x_j)$ is 
+positive definite. Therefore, its eigenvalues are positive. Thus, it follows that the product of 
+those eigenvalues, aka the determinant of $K$, is also positive. That is,
+\begin{align*}
+    0 \leq K_{11}K_{22} - K_{12}K_{21} &= K_{11}K_{22} - K_{12}K_{12}^* \\
+    &= K_{11}K_{22} - |K_{12}|^2 \\
+    &= \Gamma(x_1, x_1)\Gamma(x_2, x_2) - |\Gamma(x_1, x_2)|^2 \\
+    &= \Gamma(x, x)\Gamma(x', x') - |\Gamma(x, x')|^2
+\end{align*}
+where $K_{12}^*$ is the complex conjugate of $K_{12}$. Since $\Gamma$ is real-valued,
+$K_{12}^* = K_{12}$. Thus, we have that 
+\begin{align}
+    |\Gamma(x, x')|^2 \leq \Gamma(x, x)\Gamma(x', x')
+\end{align}
+
+
+\subsection*{Problem 2} % Problem 2
+\begin{mdframed}
+    Given a kernel $K$ on $\mathcal{X}$ define its normalized version as
+    \[
+    \bar{K}(x,x') = 
+        \begin{cases}
+            0 & \text{if } K(x,x)=0 \text{ or } K(x', x')=0 \\ 
+            \frac{K(x, x')}{\sqrt{K(x, x)} \sqrt{K(x', x')}} & \text{Otherwise.} 
+        \end{cases}
+    \]
+    Show that if $K$ is PDS then so is $\bar{K}$.
+\end{mdframed}
+
+
+\subsection*{Problem 3} % Problem 3
+\begin{mdframed}
+    Show that the following kernels on $\mathbb{R}^{d}$ are PDS:
+    \begin{itemize}
+        \item Polynomial kernel: $K(x, x')=(x^{T} x'+c)^{\alpha}$ for $c>0$ and $\alpha \in \mathbb{N}$.
+        \item Exponential kernel: $K(x, x')=\exp (x^Tx')$.
+        \item RBF kernel: $K(x, x')=\exp (-\gamma^{2}\|x-x'\|_2^2)$.
+    \end{itemize}
+\end{mdframed}
+
+
+\subsection*{Problem 4} % Problem 4
+\begin{mdframed}
+    Let $\Omega \subseteq \mathbb{R}^{d}$ and let $\{\psi_j\}_{j=1}^n$ be a sequence of continuous 
+    functions on $\Omega$ and $\{\lambda_j\}_{j=1}^n$ a sequence of non-negative numbers. Show that 
+    $K(x,x')=\sum_{j=1}^n \lambda_j\psi_j(x)\psi_j(x')$ is a $\operatorname{PDS}$ kernel on $\Omega$.
+\end{mdframed}
+
+
+
+\subsection*{Problem 5} % Problem 5
+\begin{mdframed}
+    Show that:
+    \begin{enumerate}[topsep=0pt, partopsep=0pt, itemsep=0pt, label=(\roman*)]
+        \item if $K$ and $K'$ are two reproducing kernels for an RKHS $\mathcal{H}$, 
+            then they have to be the same. \\
+        \item the RKHS of a PDS kernel $K$ is unique.
+    \end{enumerate}
+\end{mdframed}
+
+
+
+
+
+\section*{COMPUTATION}
+
+\subsection*{EXPERIMENTS}
+
+
+\end{document}
