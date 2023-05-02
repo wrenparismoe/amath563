@@ -7,19 +7,25 @@
 \usepackage{mathtools}
 \usepackage{mathrsfs}
 \usepackage{mdframed}
+\usepackage{fancyhdr}
 %\usepackage{graphicx}
 %\usepackage{hyperref}
 %\graphicspath{ {./img/} }
 
-%\newcommand{text}[1]{\makebox[0pt][l]{#1}}
-\DeclareMathOperator{\dom}{dom}
-\DeclareMathOperator{\range}{range}
-
-\title{Homework 1 - AMATH 583}
+\pagestyle{fancy}
+\title{Homework 2 - AMATH 563}
 \author{Warren Paris-Moe}
 \date{April 2023}
+\fancyhf{}
+\fancyhead[C]{{\small \emph{W. Paris-Moe / Homework 2 Writeup | AMATH 563}}}
+\fancyhead[R]{\emph{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\newcommand\tk{\tilde k}\newcommand\ip[2]{\langle #1,#2\rangle}
 
 \begin{document}
+\maketitle
 
 \section*{THEORY}
 
@@ -33,8 +39,8 @@
 Let $\Gamma:\mathcal{X}\times\mathcal{X}arrow\mathbb{R}$ be a positive definite symmetric (PDS)
 kernel in the real space and $x,x' \in \mathcal{X}$. Say $x=x_1$ and $x'=x_2$. Then, since $\Gamma$ 
 is PDS, we know that the $2 \times 2$ kernel matrix $K$ with entries $K_{ij} = \Gamma(x_i, x_j)$ is 
-positive definite. Therefore, its eigenvalues are positive. Thus, it follows that the product of 
-those eigenvalues, aka the determinant of $K$, is also positive. That is,
+positive definite. Therefore, its eigenvalues are nonnegative. Thus, it follows that the product of 
+those eigenvalues, aka the determinant of $K$, is also nonnegative. That is,
 \begin{align*}
     0 \leq K_{11}K_{22} - K_{12}K_{21} &= K_{11}K_{22} - K_{12}K_{12}^* \\
     &= K_{11}K_{22} - |K_{12}|^2 \\
@@ -61,6 +67,23 @@ $K_{12}^* = K_{12}$. Thus, we have that
     Show that if $K$ is PDS then so is $\bar{K}$.
 \end{mdframed}
 
+Notice when $K(x, x) = 0$ or $K(x', x') = 0$, we see that $\bar{K}(x, x') = 0$ so it the
+normalized kernel is positive definite. Now, examining the else case for positive definiteness and
+using the feature map representation of $K$, we have that for $c_1, c_2, \dots, c_n \in \mathbb{R}$,
+\begin{align*}
+    \sum_{i,j=1}c_ic_j\hat{K}(x_i,x_j) &= \sum_{i,j=1}\frac{c_ic_jK(x_i, x_j)}{\sqrt{K(x_i, x_i)} \sqrt{K(x_j, x_j)}} \\
+    &=\sum_{i,j=1}\frac{c_ic_j\langle\varphi_{x_i},\varphi_{x_j}\rangle}{\sqrt{\langle\varphi_{x_i},\varphi_{x_i}\rangle}\sqrt{\langle\varphi_{x_j},\varphi_{x_j}\rangle}} \\
+    &=\sum_{i,j}\frac{c_ic_j\langle\varphi_{x_i},\varphi_{x_j}\rangle}{\sqrt{\|\varphi_{x_i}\|^2}\sqrt{\|\varphi_{x_j}\|^2}} \\
+    &=\sum_{i,j=1}\frac{c_ic_j\langle\varphi_{x_i},\varphi_{x_j}\rangle}{\|\varphi_{x_i}\| \|\varphi_{x_j}\|} \\
+    &=\sum_{i=1}\|\frac{c_i\varphi_{x_i}}{\|\varphi_{x_i}\|}\|^2 \\
+    &\geq 0
+\end{align*}
+since $K$ is PDS. We can see that the symmetry of the normalized kernel $\hat{K}(x,x')=\hat{K(x',x)}$ is trivial. 
+Thus, we have that $\bar{K}$ is PDS.
+
+Note: The goal of using the normalized kernel is to ensure that points in the feature space have unit length, or norm.
+This process is, in effect, equivalent to replacing $\varphi(x_i)$ with $\frac{\varphi(x_i)}{\|\varphi(x_i)\|}$.
+
 
 \subsection*{Problem 3} % Problem 3
 \begin{mdframed}
@@ -72,14 +95,69 @@ $K_{12}^* = K_{12}$. Thus, we have that
     \end{itemize}
 \end{mdframed}
 
+\subsubsection*{Polynomial Kernel}
+Let $K(x, x') = (x^Tx' + c)^\alpha$ for $c > 0$ and $\alpha \in \mathbb{N}$. Then, we have that
+\begin{align*}
+    K(x, x') = (x^Tx' + c)^\alpha = (x'^Tx + c)^\alpha = K(x', x)
+\end{align*}
+showing that the kernel is symmetric. Now, if we expand out the expression into a sum with 
+non-negative coefficients, the result is a sum of of positive definite kernels $\langle x,x'\rangle=x^Tx'$
+raised to integer powers. Each individual term is a valid kernel by the the product rule of kernels.
+By using the binomial formula we can see that the polynomial kernel is PDS since it is a sum of PDS kernels:
+\begin{align*}
+    K(x, x') = (x^T x' + c)^\alpha = \sum_{k=1}^\alpha \binom{\alpha}{k} c^{\alpha - k}(x^Tx')^k
+\end{align*}
+
+\subsubsection*{Exponential Kernel}
+Let $K(x, x') = \exp(x^Tx')$. Then, using the taylor approximation of the exponential function
+\[
+    \exp{(x)} = \lim_{k \to \infty} (\sum_{i=0}^k \frac{x^i}{i!})  = \lim_{k \to \infty} (1 + x + \dots + \frac{x^k}{k!})
+\]
+we have 
+\[
+    K(x,x') = \exp{(x^Tx')} = \lim_{k \to \infty} (1 + (x^Tx') + \dots + \frac{(x^Tx')^k}{k!})
+\]
+where we can see that the exponential kernel is just a sum of PDS kernels $\langle x,x'\rangle=x^Tx'$
+raised to degree $i$, multiplied by non-negative coefficients. Thus, by the sum and product rules of 
+kernels, the exponential kernel is PDS.
+
+
+\subsubsection*{RBF Kernel}
+By applying the taylor expansion of the exponential function and some reworking of the Gaussian kernel,
+we can show that it is PDF. First, using the fact that $\|x-x'\|^2 = \|x\|^2 + \|x'\|^2 - 2x^Tx'$, 
+we rewrite the RBF kernel as
+\begin{align*}
+    K(x,x') &= \exp(-\gamma^2\|x-x'\|_2^2) \\
+    &= \exp{(-\gamma^2 \|x\|^2)} \exp{(-\gamma^2 \|x'\|^2)} \exp{(2\gamma^2 x^Tx')} \\ 
+    &= f(x)f(x')\exp{(2\gamma^2 x^Tx')}
+\end{align*}
+where $f(x)=\exp{(-\gamma^2 \|x\|^2)}$ is a positive function. By the tensor product rule of kernels, more specifically a 
+conformal transformation, we have that $f(x)f(x')$ is a PDS kernel.
+Applying the infinite talor expansion to the last term, we get
+\begin{align*}
+    \exp{(2\gamma^2 x^Tx')} &= \sum_{k=0}^\infty \frac{(2\gamma^2 x^Tx')^k}{k!} \\
+    &= \sum_{k=0}^\infty \frac{(2\gamma^2)^k}{k!}(x^Tx')^k \\
+    &= 1 + (2\gamma^2) x^Tx' + \frac{(2\gamma^2)^2}{2}(x^Tx')^2 + \frac{(2\gamma^2)^3}{6}(x^Tx')^3 + \dots
+\end{align*}
+which following logic similar to the exponential kernel, we can see that $\exp{(2\gamma^2 x^Tx')}$ is PDS,
+and thus the RBF kernel is PDS as it is the product of two valid PDS kernels.
+
 
 \subsection*{Problem 4} % Problem 4
 \begin{mdframed}
     Let $\Omega \subseteq \mathbb{R}^{d}$ and let $\{\psi_j\}_{j=1}^n$ be a sequence of continuous 
     functions on $\Omega$ and $\{\lambda_j\}_{j=1}^n$ a sequence of non-negative numbers. Show that 
-    $K(x,x')=\sum_{j=1}^n \lambda_j\psi_j(x)\psi_j(x')$ is a $\operatorname{PDS}$ kernel on $\Omega$.
+    $K(x,x')=\sum_{j=1}^n \lambda_j\psi_j(x)\psi_j(x')$ is a PDS kernel on $\Omega$.
 \end{mdframed}
-
+Let $c \in \mathbb{R}^m$ be an arbitrary vector of constants. Then, we have that
+\begin{align*}
+    \sum_{i,j=1}^m c_i c_j K(x_i, x_j) &= \sum_{i,j=1}^m c_i c_j \sum_{k=1}^n \lambda_k \psi_k(x_i)\psi_k(x_j) \\
+    &= \sum_{k=1}^n \lambda_k \sum_{i,j=1}^m c_i c_j \psi_k(x_i)\psi_k(x_j) \\
+    &= \sum_{k=1}^n \lambda_k \left(\sum_{i=1}^m c_i \psi_k(x_i)\right)^2 \geq 0
+\end{align*}
+where the last inequality follows from the fact that the square of a real number is non-negative and
+the sequence $\{\lambda_j\}_{j=1}^n$ is non-negative. Thus, we have that 
+$K(x,x')=\sum_{j=1}^n \lambda_j\psi_j(x)\psi_j(x')$ is a PDS kernel on $\Omega$.
 
 
 \subsection*{Problem 5} % Problem 5
@@ -92,8 +170,72 @@ $K_{12}^* = K_{12}$. Thus, we have that
     \end{enumerate}
 \end{mdframed}
 
+\begin{enumerate}[topsep=0pt, partopsep=0pt, itemsep=0pt, label=(\roman*)]
+    \item Suppose that $K$ is a reproducing kernels for an RKHS $\mathcal{H}$ on a set $X$. 
+        Let $x,x'\in X$ and $f\in \mathcal{H}$. Since $K$ is a reproducing kernel, we have that 
+        $f(x)=\langle f, K_x\rangle$ and $K(x,x') = \langle K_x, K_{x'}\rangle = K_x(x')$ where 
+        $\langle \cdot,\cdot\rangle$ is an inner product on $\mathcal{H}$. 
+        Similarly, let $K'$ be another reproducing kernel for $\mathcal{H}$ on $X$ with identical 
+        properties. Then, $\forall x \in X$, we have that
+        \begin{align*}
+            \|K_x - K'_x\|^2 &= \ip{K_x - K'_x}{K_x - K'_x} \\
+            &= \ip{K_x}{K_x}+\ip{K'_x}{K'_x}-\ip{K_x}{K'_x}-\ip{K'_x}{K_x} \\ 
+            &= K(x,x)+K'(x,x)-K_x(x)-K'_x(x) \\
+            &= K(x,x)+K'(x,x)-K(x,x)-K'(x,x) \\
+            &=0
+        \end{align*}
+        Therefore, we have that $K_x = K'_x$ for all $x \in X$, and thus $K=K'$.
+
+    \item Suppose that $K$ is a PDS kernel on a set $X$ so that $\forall x \in X, K_x = K(x, \cdot)$.
+        Now, let $\mathcal{H}_0$ be the linear span of $\{K_x\}_{x\in X}$. Then, we define an inner 
+        product on $\mathcal{H}_0$ as follows:
+        \[
+            \ip{\sum_{j=1}^n b_j K_{x_j}}{\sum_{i=1}^m a_i K_{x'_i}} = \sum_{i,j=1}^{m,n} a_i b_j K(x_j, x'_i)
+        \]
+        where $a_i, b_j \in \mathbb{R}$ and $x, x' \in X$. The above implies that $K(x,x')=\ip{K_x}{K_{x'}}_{\mathcal{H}_0}$.
+        Notice that since $K$ is symmetric, the inner product must also be symmetric, ie:
+        $\ip{K_x}{K_{x'}}_{\mathcal{H}_0} = \ip{K_{x'}}{K_x}_{\mathcal{H}_0}$. \\
+        Let $\mathcal{H}$ be the completion of $\mathcal{H}_0$ equipped with the inner product defined above.
+        Then, $\mathcal{H}$ is made up of functions of the form
+        \[
+            f(x) = \sum_{i=1}^{\infty} a_i K_{x_i}(x)
+        \]
+        where 
+        \[
+            \lim_{n\to \infty} \sup_{p\geq 0} \| \sum_{i=n}^{n+p} a_i K_{x_i} \|_{\mathcal{H}_0} = 0.
+        \] 
+        Next, we check for the reproducing property
+        \[
+            \ip{f}{K_x}_{\mathcal{H}} = \sum_{i=1}^{\infty} a_i \ip{K_{x_i}}{K_x}_{\mathcal{H}_0} = \sum_{i=1}^{\infty} a_i K(x_i, x) = f(x)
+        \]
+        Now, let $\mathcal{H}'$ be another RKHS of $K$ on $X$. Then, $\forall x,x' \in X$, we have that
+        \[
+            \ip{K_x}{K_{x'}}_{\mathcal{H}_0} = K(x,x') = \ip{K_x}{K_{x'}}_{\mathcal{H}'}.
+        \]
+        We can observe that the inner products on $\mathcal{H}_0$ and $\mathcal{H}'$ are identical by linearity
+        on the span of $\{K_x : x\in X\}$, $\ip{\cdot}{\cdot}_\mathcal{H} = \ip{\cdot}{\cdot}_{\mathcal{H}'}$.
+        It follows that $\mathcal{H} \subset \mathcal{H}'$ since $\mathcal{H}'$ is complete and contains
+        $\mathcal{H}_0$ meaning it must contain its completion as well. \\
+        Furthermore, let $f$ be an element of $\mathcal{H}'$. Then, as $\mathcal{H}$ is a closed subspace of $\mathcal{H}'$,
+        we have that $f = f_{\mathcal{H}} + f_{\mathcal{H}^\perp}$ where $f_{\mathcal{H}} \in \mathcal{H}$ and
+        $f_{\mathcal{H}^\perp} \in \mathcal{H}^\perp$. Here, $\mathcal{H}^\perp$ is the orthogonal complement to $\mathcal{H}$.
+        Then, we have that for any $x \in X$, following from the fact that $K$ is a reproducing kernel for both $\mathcal{H}'$
+        and $\mathcal{H}$,
+        \begin{align*}
+            f(x) &= \ip{K_x}{f}_{\mathcal{H}'} \\
+            &= \ip{K_x}{f_{\mathcal{H}}}_{\mathcal{H}'} + \ip{K_x}{f_{\mathcal{H}^\perp}}_{\mathcal{H}'} \\
+            &= \ip{K_x}{f_{\mathcal{H}}}_{\mathcal{H}'} \\
+            &= \ip{K_x}{f_{\mathcal{H}}}_{\mathcal{H}} \\
+            &= f_{\mathcal{H}}(x).
+        \end{align*}
+        The above derivation comes from the idea that $K_x$ belongs to $\mathcal{H}$ meaning that it is orthogonal to
+        $f_{\mathcal{H}^\perp}$ in $\mathcal{H}'$ (ie: its inner product with $f_{\mathcal{H}^\perp}$ in $\mathcal{H}'$ is zero).
+        This implies that every element of $\mathcal{H}'$ is also an element of $\mathcal{H}$, and thus 
+        $\mathcal{H}' \subset \mathcal{H}$ so that $f=f_\mathcal{H}$ in $\mathcal{H}'$. Therefore, we can conclude that
+        if $K$ is a PDS kernel on $X$, then $\mathcal{H}$ is the unique RKHS of $K$ on $X$.
 
 
+\end{enumerate}
 
 
 \section*{COMPUTATION}
