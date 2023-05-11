@@ -2,3 +2,7 @@
 *.aux
 *.log
 *.out
+.vscode
+.mypy_cache
+*prompt*
+HW2/code/MNIST

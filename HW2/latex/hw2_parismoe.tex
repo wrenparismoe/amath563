@@ -8,9 +8,12 @@
 \usepackage{mathrsfs}
 \usepackage{mdframed}
 \usepackage{fancyhdr}
-%\usepackage{graphicx}
-%\usepackage{hyperref}
-%\graphicspath{ {./img/} }
+\usepackage{graphicx}
+\usepackage{hyperref}
+\graphicspath{ {./img/} }
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \pagestyle{fancy}
 \title{Homework 2 - AMATH 563}
@@ -236,11 +239,141 @@ $K(x,x')=\sum_{j=1}^n \lambda_j\psi_j(x)\psi_j(x')$ is a PDS kernel on $\Omega$.
 
 
 \end{enumerate}
-
+\newpage
 
 \section*{COMPUTATION}
 
-\subsection*{EXPERIMENTS}
+\subsection*{MNIST DATASET}
+% Explain the dataset
+The MNIST dataset is a collection of 70,000 images of handwritten digits. Each image is a 28x28 pixel image  that is 
+projected into a 784 dimensional vector. Each pixel is represented by a value between 0 and 255, where 0 is white and 255 is black.
+The dataset is split into 60,000 training images and 10,000 test images. \\
+% include figure `mnist-digits.png`
+\begin{figure}[h!]
+    \centering
+    \includegraphics[scale=0.4]{mnist-digits.png}
+\caption{MNIST digits}
+\label{fig:mnist}
+\end{figure}
 
+Digits 0-9 of the MNIST dataset are shown in Figure \ref{fig:mnist}. One issue with the dataset is that the images are not centered
+making it more difficult for a classifier to learn the features of the digits. Also, since the images are supposed to be of handwritten
+digits, there is a lot of variation in the way the digits are written. For example, the digit 4 can be written with a straight line or
+with a curved line. This makes it even more difficult for a classifier to learn the features of the digits. Variation within the dataset
+among the digit 1 is shown in Figure \ref{fig:ones}, and variation among the digit 7 in Figure \ref{fig:sevens}. \\
+% include figure `ones.png`
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{ones.png}
+        \caption{Variation in the digit 1.}
+        \label{fig:ones}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{sevens.png}
+        \caption{Variation in the digit 7.}
+        \label{fig:sevens}
+    \end{subfigure}
+    \caption{Variation in the MNIST dataset.}
+    \label{fig:variation}
+\end{figure}
+
+\subsection*{PREPROCESSING}
+% Explain the preprocessing steps (PCA)
+Principal component analysis (PCA) was used to reduce the dimensionality of the dataset. 
+PCA was implemnted using an eigendecomposition method. We define 
+$\boldsymbol{\mathbf{\Sigma}}$, a $784 \times 784$ matrix, as follows: 
+\[
+\boldsymbol{\mathbf{\Sigma}} = \frac{1}{n} \sum_{i=1}^n \boldsymbol{\mathbf{x}}_i {\boldsymbol{\mathbf{x}}}^{\mathrm{T}}_i
+\]
+where the $\boldsymbol{\mathbf{x}}_i$’s are points in our dataset as column vectors and $n = 60,000$ is the number 
+of points in the training dataset. Now compute the top $k$ PCA dimensions; these are the $k$ dimensions which best 
+reconstruct the data. The top $k$ PCA dimensions (modes) are the eigenvectors corresponding to the $k$ largest eigenvalues.
+The eigenvalues were sorted in descending order and the top $k$ eigenvectors were selected based on maximizing the
+the total sum of the eigenvalues (ie: the top $k$ eigenvectors were selected such that they preserved 95\% of the variance).
+The top 95\% of the variance was preserved by selecting the top 154 eigenvectors. The dataset was then projected onto
+the top 154 eigenvectors to reduce the dimensionality of the dataset. \\
+
+% Plot the PCA modes for k=154
+\begin{figure}[h!]
+    \centering
+    \includegraphics[scale=0.4]{mnist_pca.png}    
+    \caption{PCA modes for $k=154$.}
+    \label{fig:pca}
+\end{figure}
+
+Figure \ref{fig:pca} shows the same images as Figure \ref{fig:mnist} reconstructed using the top 154 PCA modes. 
+As we can see from the figure, the images are still recognizable after being projected onto the top 154 PCA modes.
+Some of the digits are not as clear as the original images, but the general structure of the digits is still preserved.
+However, now that the dimension is greatly reduced, it will be easier for a classifier to process the data when 
+fed to the model. \\
+
+\subsection*{CLASSIFIER}
+Kernel regression was applied to the MNIST dataset to classify the digits. Three different kernels were used:
+\begin{enumerate}
+    \item Gaussian kernel
+    \item Polynomial kernel
+    \item Linear kernel
+\end{enumerate}
+
+\subsubsection*{DIGITS 1 AND 9}
+
+\begin{itemize}
+    \item Linear Kernel: Training Accuracy = 1.000000, Test Accuracy = 0.994403 
+    \item Polynomial Kernel: Training Accuracy = 0.999606, Test Accuracy = 0.998134 
+    \item RBF Kernel: Training Accuracy = 0.999527, Test Accuracy = 0.998134
+\end{itemize}
+
+When trained on the digits 1 and 9, the Gaussian kernel and the polynomial kernel produced the best test accuracies.
+The linear kernel performed the worst with a test accuracy of 0.994403. The Gaussian kernel and the polynomial kernel
+performed similarly with test accuracies of 0.998134. The Gaussian kernel and the polynomial kernel likely performed better
+than the linear kernel because the linear kernel is not able to capture the non-linear features of the data. Additionally,
+PCA was found to preserve 95\% of the variance in the data when the top 108 PCA modes were selected for just the digits 1 and 9.
+
+\subsubsection*{DIGITS 3 AND 8}
+
+\begin{itemize}
+    \item Linear Kernel: NaN (extremely long runtimes)
+    \item Polynomial Kernel: Training Accuracy = 0.998080, Test Accuracy = 0.993952
+    \item RBF Kernel: Training Accuracy = 0.997830, Test Accuracy = 0.994960
+\end{itemize}
+
+When trained on the digits 3 and 8, the Gaussian kernel performed the best on the test set with RBF performing second.
+The linear kernel failed to produce an output in a reasonable time. This may be due to the nature of the data. A linear 
+kernel computes the dot product between pairs of input samples and may not be able to capture nonlinear relationships 
+between the features. As a result, the linear kernel may not perform well when the data is nonlinearly separable. 
+Though this is an odd result since, intuitively, 3s and 8s seem to have more consistent structures. The Gaussian 
+kernel and the polynomial kernel performed similarly with test accuracies of 0.998134. Additionally,
+PCA was found to preserve 95\% of the variance in the data when the top 148 PCA modes were selected for just the digits 1 and 9.
+
+
+\subsubsection*{DIGITS 1 AND 7}
+\begin{itemize}
+    \item Linear Kernel: Training Accuracy = 1.000000, Test Accuracy = 0.991678
+    \item Polynomial Kernel: Training Accuracy = 0.998616, Test Accuracy = 0.997226
+    \item RBF Kernel: Training Accuracy = 0.998770, Test Accuracy = 0.997226
+\end{itemize}
+
+For the digits 1 and 7, the RBF kernel performed marginally better than the polynomial kernel while the linear kernel 
+performed the worst out of the three. PCA was found to preserve 95\% of the variance in the data when the top 115 PCA modes
+for the digits 1 and 7.
+
+\subsubsection*{DIGITS 5 AND 2}
+\begin{itemize}
+    \item Linear Kernel: Training Accuracy = 1.000000, Test Accuracy = 0.968815
+    \item Polynomial Kernel: Training Accuracy = 0.999912, Test Accuracy = 0.998960
+    \item RBF Kernel: Training Accuracy = 0.999736, Test Accuracy = 0.999480
+\end{itemize}
+
+When trained on the digits 5 and 2, all kernels produced their best test accuracies. The linear kernel performed the worst
+of the three. The Gaussian kernel performed exceptionally well with a test accuracy of 0.999480. The polynomial kernel
+was close behind with a test accuracy of 0.998960. PCA was found to preserve 95\% of the variance in the data when the top 149 PCA modes
+for the digits 5 and 2.
+
+\subsection*{FUTURE WORK}
+In the future, I would like to examine why the linear kernel performed so poorly on the digits 3 and 8. I would also like to
+examine the effect of the number of PCA modes on the accuracy of the classifier. Further analysis using a grid search 
+hyperparameter tuning method is the sensible follow up to see how the hyperparameters affect the accuracy of the classifier.
 
 \end{document}

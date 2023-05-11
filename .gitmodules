@@ -1,0 +1,3 @@
+[submodule "demos/GraphLearning"]
+	path = demos/GraphLearning
+	url = https://github.com/jwcalder/GraphLearning.git
